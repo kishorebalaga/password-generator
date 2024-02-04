@@ -1,19 +1,40 @@
 import React, { useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  passwordGenerator,
+  lowercaseChange,
+  upperCaseChange,
+  numbersChange,
+  specialCharChange,
+  setPassWordLength,
+} from "./passwordSlice";
 import password from "../../assets/gif/password.gif";
 import restart from "../../assets/icons/refresh.svg";
 import copy from "../../assets/icons/copy.svg";
+import CheckBox from "../checkbox/Checkbox";
 
 const PasswordGen = () => {
-  const [passwordLength, setPassWordLength] = useState();
+  //const [passwordLength, setPassWordLength] = useState();
+
+  const passwordNewlyGenerated = useSelector(
+    (state) => state?.passwordgen?.passwordNew
+  );
+
+  const passwordLength = useSelector(
+    (state) => state?.passwordgen?.passwordLength
+  );
+
+  console.log("passwordLength ===>", passwordLength);
+  const dispatch = useDispatch();
 
   function log(value) {
-    setPassWordLength(value);
+    dispatch(setPassWordLength(value));
   }
   return (
     <div className=" flex flex-col my-auto justify-center items-center h-screen">
-      <div className=" w-[1/3] bg-white flex flex-col justify-center items-center rounded-2xl p-20">
+      <div className=" w-[1/3] bg-white flex flex-col justify-center items-center rounded-2xl p-10">
         <img
           src={password}
           alt="password gif"
@@ -30,10 +51,14 @@ const PasswordGen = () => {
                 type="text"
                 placeholder="password generator"
                 className=" outline-none h-full w-80"
+                value={passwordNewlyGenerated}
               />
             </div>
             <div>
-              <img src={restart} />
+              <button>
+                {" "}
+                <img src={restart} />
+              </button>
             </div>
           </div>
           <div className=" flex flex-row border-solid border-[1px] items-center border-zinc-950 rounded-2xl p-2 ml-2 bg-[#33cccc]">
@@ -73,6 +98,20 @@ const PasswordGen = () => {
             }}
           />
         </div>
+        <CheckBox
+          name="Uppercase"
+          onChange={() => {
+            dispatch();
+          }}
+          id={"uppercase"}
+        />
+        <CheckBox name="Lowercase" onChange={() => {}} id={"lowercase"} />
+        <CheckBox name="Numbers" onChange={() => {}} id={"numbers"} />
+        <CheckBox
+          name="Special Characters"
+          onChange={() => {}}
+          id={"specialchar"}
+        />
       </div>
     </div>
   );
