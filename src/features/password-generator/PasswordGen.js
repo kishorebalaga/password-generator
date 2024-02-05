@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,6 +9,7 @@ import {
   numbersChange,
   specialCharChange,
   setPassWordLength,
+  setCopyText,
 } from "./passwordSlice";
 import password from "../../assets/gif/password.gif";
 import restart from "../../assets/icons/refresh.svg";
@@ -19,19 +20,37 @@ const PasswordGen = () => {
   //const [passwordLength, setPassWordLength] = useState();
 
   const passwordNewlyGenerated = useSelector(
-    (state) => state?.passwordgen?.passwordNew
+    (state) => state?.password?.passwordNew
+  );
+  const lowerCaseChecked = useSelector((state) => state?.password?.lowercase);
+
+  const upperCaseChecked = useSelector((state) => state?.password?.uppercase);
+
+  const numbersChecked = useSelector((state) => state?.password?.numbers);
+  const copyText = useSelector((state) => state?.password?.copy);
+
+  const specialCharChecked = useSelector(
+    (state) => state?.password?.specialChar
   );
 
   const passwordLength = useSelector(
-    (state) => state?.passwordgen?.passwordLength
+    (state) => state?.password?.passwordLength
   );
 
-  console.log("passwordLength ===>", passwordLength);
   const dispatch = useDispatch();
 
   function log(value) {
     dispatch(setPassWordLength(value));
   }
+
+  useEffect(() => {
+    dispatch(upperCaseChange());
+    dispatch(lowercaseChange());
+    dispatch(numbersChange());
+    dispatch(specialCharChange());
+    dispatch(passwordGenerator());
+  }, []);
+
   return (
     <div className=" flex flex-col my-auto justify-center items-center h-screen">
       <div className=" w-[1/3] bg-white flex flex-col justify-center items-center rounded-2xl p-10">
@@ -40,7 +59,7 @@ const PasswordGen = () => {
           alt="password gif"
           className=" object-fill h-32 w-32"
         />
-        <div className=" font-bold text-2xl">PASSWORD GENERATOR</div>
+        <div className="font-bold text-2xl">PASSWORD GENERATOR</div>
         <div>
           Ensure online account safety by creating strong and secure passwords
         </div>
@@ -55,7 +74,12 @@ const PasswordGen = () => {
               />
             </div>
             <div>
-              <button>
+              <button
+                onClick={() => {
+                  dispatch(passwordGenerator());
+                  dispatch(setCopyText("Copy"));
+                }}
+              >
                 {" "}
                 <img src={restart} />
               </button>
@@ -65,8 +89,13 @@ const PasswordGen = () => {
             <div>
               <img src={copy} alt="Copy" className=" h-8 w-8 pr-[1px]" />
             </div>
-            <div>
-              <button>Copy</button>
+            <div
+              onClick={() => {
+                navigator.clipboard.writeText(passwordNewlyGenerated);
+                dispatch(setCopyText("Copied"));
+              }}
+            >
+              <button>{copyText}</button>
             </div>
           </div>
         </div>
@@ -96,21 +125,40 @@ const PasswordGen = () => {
               opacity: "1",
               borderWidth: "1px",
             }}
+            value={passwordLength}
           />
         </div>
         <CheckBox
           name="Uppercase"
           onChange={() => {
-            dispatch();
+            dispatch(upperCaseChange());
           }}
           id={"uppercase"}
+          checked={upperCaseChecked}
         />
-        <CheckBox name="Lowercase" onChange={() => {}} id={"lowercase"} />
-        <CheckBox name="Numbers" onChange={() => {}} id={"numbers"} />
+        <CheckBox
+          name="Lowercase"
+          onChange={() => {
+            dispatch(lowercaseChange());
+          }}
+          id={"lowercase"}
+          checked={lowerCaseChecked}
+        />
+        <CheckBox
+          name="Numbers"
+          onChange={() => {
+            dispatch(numbersChange());
+          }}
+          checked={numbersChecked}
+          id={"numbers"}
+        />
         <CheckBox
           name="Special Characters"
-          onChange={() => {}}
+          onChange={() => {
+            dispatch(specialCharChange());
+          }}
           id={"specialchar"}
+          checked={specialCharChecked}
         />
       </div>
     </div>

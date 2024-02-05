@@ -7,6 +7,7 @@ const initialState = {
   specialChar: false,
   passwordLength: 8,
   passwordNew: "",
+  copy: "Copy",
 };
 
 export const passwordSlice = createSlice({
@@ -16,6 +17,14 @@ export const passwordSlice = createSlice({
     passwordGenerator: (state) => {
       let password = "";
       let passwordGen = "";
+      if (
+        !state.uppercase &&
+        !state.lowercase &&
+        !state.numbers &&
+        !state.specialChar
+      ) {
+        state.lowercase = true;
+      }
       if (state.uppercase) {
         password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       }
@@ -29,9 +38,10 @@ export const passwordSlice = createSlice({
         password += "'!@#$%^&*()_+-={}[]|:;'<>,.?/~';";
       }
       for (let i = 0; i < state.passwordLength; i++) {
-        passwordGen +=
-          password[Math.floor(Math.random() * state.passwordLength)];
+        passwordGen += password[Math.floor(Math.random() * password.length)];
       }
+
+      state.passwordNew = passwordGen;
     },
     lowercaseChange: (state) => {
       state.lowercase = !state.lowercase;
@@ -48,6 +58,9 @@ export const passwordSlice = createSlice({
     setPassWordLength: (state, action) => {
       state.passwordLength = action.payload;
     },
+    setCopyText: (state, action) => {
+      state.copy = action.payload;
+    },
   },
 });
 
@@ -58,6 +71,7 @@ export const {
   numbersChange,
   specialCharChange,
   setPassWordLength,
+  setCopyText,
 } = passwordSlice.actions;
 
 export default passwordSlice.reducer;
